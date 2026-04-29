@@ -9,6 +9,10 @@
 # Build directories (if you use CMake later)
 build/
 bin/
+.cache
 
 # OS generated files
 .DS_Store
+
+# configuration files
+.clang-format
