@@ -8,15 +8,15 @@ using None = std::monostate;
 
 template <typename T> class GenericECP
 {
-  private:
+  public:
     T a;
     T b;
     std::optional<T> x;
     std::optional<T> y;
 
-  public:
     GenericECP(const T &a, const T &b, const std::optional<T> &x,
-                  const std::optional<T> &y) : a(a), b(b), x(std::nullopt), y(std::nullopt)
+               const std::optional<T> &y)
+        : a(a), b(b), x(std::nullopt), y(std::nullopt)
     {
         if (!x.has_value() && !y.has_value())
             return;
@@ -24,6 +24,7 @@ template <typename T> class GenericECP
         T yVal = y.value();
         if (yVal * yVal != xVal * xVal * xVal + a * xVal + b)
         {
+            std::cout << xVal << " " << yVal << std::endl;
             throw std::invalid_argument("point does not lie on elliptic curve");
         }
         this->x = x;

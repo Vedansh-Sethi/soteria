@@ -5,10 +5,9 @@
 
 class FieldElement 
 {
-    private:
+    public:
         uint256 data;
         uint256 prime;
-    public:
         FieldElement(uint256 data,uint256 prime)
         {
             if(data >= prime || data < 0)
