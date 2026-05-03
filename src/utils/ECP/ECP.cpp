@@ -44,7 +44,7 @@ GenericECP<T> GenericECP<T>::operator+(const GenericECP<T> &other) const
 
         T m = (xVal * xVal * 3 + a) / (yVal * 2);
         T resultX = m * m - (xVal * 2);
-        T resultY = (resultX - xVal)*(-3) - yVal;
+        T resultY = (xVal - resultX) * m - yVal;
         return GenericECP<T>(a, b, resultX, resultY);
     }
 
