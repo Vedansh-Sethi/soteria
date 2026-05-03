@@ -1,4 +1,5 @@
 #include "utils/ECP/ECP.hpp"
+#include "utils/field_element/field_element.hpp"
 #include <optional>
 #include <ostream>
 #include <sstream>
@@ -28,25 +29,31 @@ GenericECP<T> GenericECP<T>::operator+(const GenericECP<T> &other) const
     }
 
     if(!this->x.has_value()) return other;
-    if(!other.x.has_value()) return this;
+    if(!other.x.has_value()) return *this;
 
-    if (other == this)
+    T xVal = x.value();
+    T yVal = y.value();
+
+    if (other == *this)
     {
         if (x == std::nullopt)
             return GenericECP<T>(a, b, std::nullopt, std::nullopt);
 
-        if (y == 0 * x)
+        if (y.value() == x.value() * 0)
             return GenericECP<T>(a, b, std::nullopt, std::nullopt);
 
-        T m = (3 * x * x + a) / (2 * y);
-        T resultX = m * m - 2 * x;
-        T resultY = m(x - resultX) - y;
+        T m = (xVal * xVal * 3 + a) / (yVal * 2);
+        T resultX = m * m - (xVal * 2);
+        T resultY = (resultX - xVal)*(-3) - yVal;
         return GenericECP<T>(a, b, resultX, resultY);
     }
 
-    T m = (other.y - y) / (other.x - x);
-    T resultX = m * m - other.x - x;
-    T resultY = m(other.x - resultX) - other.y;
+
+    T m = (other.y.value() - yVal) / (other.x.value() - xVal);
+    T resultX = m * m - other.x.value() - xVal;
+    T resultY = m * (other.x.value() - resultX) - other.y.value();
 
     return GenericECP<T>(a, b, resultX, resultY);
 }
+
+template class GenericECP<FieldElement>;
