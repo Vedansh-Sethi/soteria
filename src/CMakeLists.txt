@@ -3,6 +3,8 @@ project(soteria CXX)
 
 set(SOURCES
     main.cpp
+    utils/field_element/field_element.cpp
+    utils/ECP/ECP.cpp
 )
 
 find_package(Boost REQUIRED)
