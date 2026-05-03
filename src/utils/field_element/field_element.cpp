@@ -35,8 +35,7 @@ FieldElement FieldElement::operator-(const FieldElement &other) const
         std::string error = "cannot subtract two numbers in different fields";
         throw std::invalid_argument(error);
     }
-    uint256 result = ((data - other.data) % prime + prime) % prime;
-    return FieldElement(result, prime);
+    return FieldElement((prime + data - other.data) % prime, prime);
 }
 
 FieldElement FieldElement::pow(uint256 exponent) const
