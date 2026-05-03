@@ -24,7 +24,6 @@ template <typename T> class GenericECP
         T yVal = y.value();
         if (yVal * yVal != xVal * xVal * xVal + a * xVal + b)
         {
-            std::cout << xVal << " " << yVal << std::endl;
             throw std::invalid_argument("point does not lie on elliptic curve");
         }
         this->x = x;
