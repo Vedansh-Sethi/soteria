@@ -20,11 +20,15 @@ class FieldElement
             this->prime = prime;
         }
 
-        std::string toString() const;
         bool operator==(const FieldElement& other) const;
         FieldElement operator+(const FieldElement& other) const;
         FieldElement operator-(const FieldElement& other) const;
         FieldElement operator*(const FieldElement& other) const;
+        FieldElement operator*(const int& other) const;
+        FieldElement operator*(const uint& other) const;
+        FieldElement operator*(const uint256& other) const;
         FieldElement pow(uint256 exponent) const;
         FieldElement operator/(const FieldElement& other) const;
+
+        friend std::ostream& operator<<(std::ostream& os, const FieldElement& fe);
 };

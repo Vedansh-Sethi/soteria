@@ -1,10 +1,11 @@
 #include "utils/field_element/field_element.hpp"
+#include <ostream>
 #include <stdexcept>
 #include <sys/types.h>
 
-std::string FieldElement::toString() const
+std::ostream& operator<<(std::ostream& os, const FieldElement& fe)
 {
-    return "FieldElement_" + prime.str() + "(" + data.str() + ")";
+    return os << "FieldElement_" << fe.prime << "(" << fe.data << ")";
 }
 
 bool FieldElement::operator==(const FieldElement &other) const
@@ -69,6 +70,21 @@ FieldElement FieldElement::operator*(const FieldElement &other) const
     uint256 result = uint256((uint512(other.data) * data) % prime);
 
     return FieldElement(result, prime);
+}
+
+FieldElement FieldElement::operator*(const int &other) const
+{
+    return FieldElement(uint256((uint512(data) *  other)% prime), prime);
+}
+
+FieldElement FieldElement::operator*(const uint &other) const
+{
+    return FieldElement(uint256((uint512(data) *  other)% prime), prime);
+}
+
+FieldElement FieldElement::operator*(const uint256 &other) const
+{
+    return FieldElement(uint256((uint512(data) *  other)% prime), prime);
 }
 
 FieldElement FieldElement::operator/(const FieldElement &other) const
