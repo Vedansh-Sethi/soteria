@@ -28,8 +28,10 @@ GenericECP<T> GenericECP<T>::operator+(const GenericECP<T> &other) const
         throw std::invalid_argument(error.str());
     }
 
-    if(!this->x.has_value()) return other;
-    if(!other.x.has_value()) return *this;
+    if (!this->x.has_value())
+        return other;
+    if (!other.x.has_value())
+        return *this;
 
     T xVal = x.value();
     T yVal = y.value();
@@ -48,12 +50,36 @@ GenericECP<T> GenericECP<T>::operator+(const GenericECP<T> &other) const
         return GenericECP<T>(a, b, resultX, resultY);
     }
 
-
     T m = (other.y.value() - yVal) / (other.x.value() - xVal);
     T resultX = m * m - other.x.value() - xVal;
     T resultY = m * (other.x.value() - resultX) - other.y.value();
 
     return GenericECP<T>(a, b, resultX, resultY);
+}
+
+template <typename T>
+void GenericECP<T>::operator+=(const GenericECP<T> &other)
+{
+    *this = *this + other;
+}
+
+template <typename T>
+GenericECP<T> GenericECP<T>::operator*(uint256 coeff) const
+{
+    GenericECP<T> mult = *this;
+    GenericECP<T> result = GenericECP<T>(a, b, std::nullopt, std::nullopt);
+    while (coeff > 0)
+    {
+        if (coeff % 2 == 1)
+        {
+            result += mult;
+        }
+
+        mult += mult;
+        coeff /= 2;
+    }
+
+    return result;
 }
 
 template class GenericECP<FieldElement>;

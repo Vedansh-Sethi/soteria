@@ -43,6 +43,8 @@ template <typename T> class GenericECP
     bool operator==(const GenericECP<T> &other) const;
     bool operator!=(const GenericECP<T> &other) const;
     GenericECP<T> operator+(const GenericECP<T> &other) const;
+    GenericECP<T> operator*(uint256 coeff) const;
+    void operator+=(const GenericECP<T>& other);
     std::string toString() const;
 };
 
