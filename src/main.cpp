@@ -1,22 +1,22 @@
-#include <iostream>
-#include <optional>
-#include "utils/ECP/ECP.hpp"
-#include "utils/field_element/field_element.hpp"
+#include "ECC/ECP/ECP.hpp"
+#include "ECC/field_element/field_element.hpp"
+#include "utils/hexer/hexer.hpp"
 
 int main()
 {
-    uint256 prime = 223;
+    uint256 prime = dehexify(
+        "0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f");
     FieldElement a = FieldElement(0, prime);
     FieldElement b = FieldElement(7, prime);
-    std::cout << a + b << std::endl;
-
-    std::optional<FieldElement> x1 = std::make_optional<FieldElement>(192, prime);
-    std::optional<FieldElement> y1 = std::make_optional<FieldElement>(105, prime);
-    std::optional<FieldElement> x2 = std::make_optional<FieldElement>(17, prime);
-    std::optional<FieldElement> y2 = std::make_optional<FieldElement>(56, prime);
-
-    FFECP p1 = FFECP(a, b, x1, y1);
-    FFECP p2 = FFECP(a, b, x2, y2);
-
-    std::cout << p1 + p2 << std::endl;
+    uint256 gx = dehexify(
+        "0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798");
+    uint256 gy = dehexify(
+        "0x483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8");
+    FieldElement gxFE = FieldElement(gx, prime);
+    FieldElement gyFE = FieldElement(gy, prime);
+    FFECP genesis = FFECP(a, b, gxFE, gyFE);
+    uint256 n = dehexify(
+        "0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141");
+    
+    std::cout << genesis * n << std::endl;
 }
