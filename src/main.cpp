@@ -1,22 +1,24 @@
-#include "ECC/ECP/ECP.hpp"
-#include "ECC/field_element/field_element.hpp"
+
+#include "ECC/secp256k1/S256Field/S256Field.hpp"
+#include "ECC/secp256k1/S256Point/S256Point.hpp"
+#include "signing/privateKey/privateKey.hpp"
+#include "signing/scalarField/scalarField.hpp"
 #include "utils/hexer/hexer.hpp"
+#include "utils/sha256/sha256.hpp"
+#include <openssl/err.h>
+#include <openssl/evp.h>
+#include <pthread.h>
 
 int main()
 {
-    uint256 prime = dehexify(
-        "0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f");
-    FieldElement a = FieldElement(0, prime);
-    FieldElement b = FieldElement(7, prime);
-    uint256 gx = dehexify(
-        "0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798");
-    uint256 gy = dehexify(
-        "0x483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8");
-    FieldElement gxFE = FieldElement(gx, prime);
-    FieldElement gyFE = FieldElement(gy, prime);
-    FFECP genesis = FFECP(a, b, gxFE, gyFE);
-    uint256 n = dehexify(
-        "0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141");
-    
-    std::cout << genesis * n << std::endl;
+    SHA256 *instance = SHA256::GetInstance();
+    uint256 e = dehexify(instance->sha256("my secret"));
+    uint256 z = dehexify(instance->sha256("my message"));
+    uint256 k = 1234567890;
+    S256Field r = (Genesis * k).x.value();
+    ScalarField s = (ScalarField(z) + ScalarField(r.data) * ScalarField(e)) /
+                    ScalarField(k);
+    S256Point publicKey = Genesis * e;
+    Signature sign = Signature(r, s);
+    std::cout << publicKey.verify(z, sign) << std::endl;
 }
