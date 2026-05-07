@@ -4,7 +4,7 @@
 #include <cctype>
 #include <string>
 
-std::string hexify(uint256 num)
+inline std::string hexify(uint256 num)
 {
     std::string hexer = "0123456789abcdef";
     std::string hexed;
@@ -14,14 +14,13 @@ std::string hexify(uint256 num)
         num >>= 4;
     }
     std::reverse(hexed.begin(),  hexed.end());
-    hexed = "0x" + hexed;
     return hexed;
 }
 
-uint256 dehexify(std::string hex)
+inline uint256 dehexify(std::string hex)
 {
     uint256 dehexed = 0;
-    for(size_t i = 2; i < hex.size(); i++)
+    for(size_t i = 0; i < hex.size(); i++)
     {
         if(std::isdigit(hex[i]))
         {
