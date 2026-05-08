@@ -41,3 +41,5 @@ std::string SHA256::sha256(const std::string &input) const
     }
     return ss.str();
 }
+
+SHA256* SHA256::instance = nullptr;
