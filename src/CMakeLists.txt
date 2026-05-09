@@ -1,15 +1,15 @@
 cmake_minimum_required(VERSION 3.15)
 project(soteria CXX)
 
+file(GLOB MATH_SOURCES CONFIGURE_DEPENDS "math/*.cpp")
+file(GLOB CRYPTO_SOURCES CONFIGURE_DEPENDS "crypto/*.cpp")
+file(GLOB UTILS_SOURCES CONFIGURE_DEPENDS "utils/*.cpp")
+
 set(SOURCES
     main.cpp
-    ECC/field_element/field_element.cpp
-    ECC/ECP/ECP.cpp
-    ECC/secp256k1/S256Point/S256Point.cpp
-    ECC/secp256k1/S256Field/S256Field.cpp
-    signing/privateKey/privateKey.cpp
-    signing/signature/signature.cpp
-    utils/crypto/crypto.cpp
+    ${MATH_SOURCES}
+    ${CRYPTO_SOURCES}
+    ${UTILS_SOURCES}
 )
 
 find_package(Boost REQUIRED)
