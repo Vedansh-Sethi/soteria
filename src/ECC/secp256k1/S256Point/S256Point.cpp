@@ -1,5 +1,6 @@
 #include "ECC/secp256k1/S256Point/S256Point.hpp"
 #include "signing/scalarField/scalarField.hpp"
+#include <stdexcept>
 
 S256Point S256Point::operator*(const uint256 coeff) const
 {
@@ -19,20 +20,63 @@ bool S256Point::verify(uint256 z, Signature sign) const
     ScalarField s = sign.s;
     ScalarField zField = ScalarField(z);
 
-    // ECDSA rules require checking both r and s are non-zero
     if (s.data == 0 || r.data == 0)
         return false;
 
     ScalarField u = zField / s;
     ScalarField v = ScalarField(r.data) / s;
 
-    // Evaluate the target point
     S256Point target = Genesis * u.data + *this * v.data;
 
-    // Safety Catch: If the target is Infinity, the signature is invalid
     if (!target.x.has_value())
         return false;
 
-    // The moment of truth
     return target.x.value() == r;
+}
+
+std::array<std::byte, 33> S256Point::serialize() const
+{
+    std::byte marker = (y.value().data % 2) ? std::byte{0x3} : std::byte{0x2};
+
+    std::array<std::byte, 32> xBytes;
+    if (!x.has_value())
+        throw std::invalid_argument("Cannot serialize points at infinity");
+    uint256 xTemp = x.value().data;
+    for (int i = 0; i < 32; i++)
+    {
+        xBytes[i] = std::byte{uint8_t(xTemp & 0xff)};
+        xTemp >>= 8;
+    }
+    reverse(xBytes.begin(), xBytes.end());
+
+    std::array<std::byte, 33> result;
+
+    result[0] = marker;
+    std::copy(xBytes.begin(), xBytes.end(), result.begin() + 1);
+
+    return result;
+}
+
+S256Point S256Point::parse(std::array<std::byte, 33> secBytes)
+{
+    std::array<std::byte, 32> xBytes;
+    std::copy(secBytes.begin() + 1, secBytes.end(), xBytes.begin());
+    S256Field xNum = hexifyBytes(xBytes);
+    S256Field alpha = xNum.pow(3) + B;
+    S256Field beta = alpha.sqrt();
+    S256Field evenBeta = 0, oddBeta = 0;
+    if (beta.data % 2 == 0)
+    {
+        evenBeta = beta;
+        oddBeta = S256Field(0) - beta;
+    }
+    else
+    {
+        evenBeta = S256Field(0) - beta;
+        oddBeta = beta;
+    }
+    if (secBytes[0] == std::byte{0x2})
+        return S256Point(xNum, evenBeta);
+    else
+        return S256Point(xNum, oddBeta);
 }

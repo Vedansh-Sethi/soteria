@@ -38,9 +38,11 @@ class S256Point : public FFECP
     }
     S256Point(S256Field x, S256Field y) : FFECP(A, B, x, y) {}
     S256Point(std::nullopt_t, std::nullopt_t) : FFECP(A, B, std::nullopt, std::nullopt) {}
-    S256Point operator*(const uint256 coefficient) const;
-    S256Point operator*(const ScalarField& coefficient) const;
-    bool verify(uint256 z, Signature sign) const;
+    S256Point operator*(const uint256) const;
+    S256Point operator*(const ScalarField&) const;
+    bool verify(uint256, Signature) const;
+    std::array<std::byte, 33> serialize() const;
+    static S256Point parse(std::array<std::byte, 33>);
     friend std::ostream &operator<<(std::ostream &os, const S256Point &S256)
     {
         if (!S256.x.has_value())
