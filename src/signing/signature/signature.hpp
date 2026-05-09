@@ -14,4 +14,5 @@ class Signature
         return os;
     }
     
+    std::vector<std::byte> serialize() const;
 };
