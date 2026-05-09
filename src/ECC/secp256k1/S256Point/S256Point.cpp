@@ -1,6 +1,9 @@
 #include "ECC/secp256k1/S256Point/S256Point.hpp"
 #include "signing/scalarField/scalarField.hpp"
+#include "utils/crypto/crypto.hpp"
 #include <stdexcept>
+
+Crypto *instance = Crypto::GetInstance();
 
 S256Point S256Point::operator*(const uint256 coeff) const
 {
@@ -79,4 +82,23 @@ S256Point S256Point::parse(std::array<std::byte, 33> secBytes)
         return S256Point(xNum, evenBeta);
     else
         return S256Point(xNum, oddBeta);
+}
+
+std::array<std::byte, 21> S256Point::address(bool testnet) const
+{
+    std::array<std::byte, 33> serial = this->serialize();
+    std::array<std::byte, 20> h160 = instance->hash160(serial);
+    std::reverse(h160.begin(), h160.end());
+    std::array<std::byte, 21> address;
+    std::copy(h160.begin(), h160.end(), address.begin());
+    if (testnet)
+    {
+        address[20] = std::byte{0x6f};
+    }
+    else
+    {
+        address[20] = std::byte{0x00};
+    }
+    std::reverse(address.begin(), address.end());
+    return address;
 }

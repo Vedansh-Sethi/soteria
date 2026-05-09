@@ -43,6 +43,7 @@ class S256Point : public FFECP
     bool verify(uint256, Signature) const;
     std::array<std::byte, 33> serialize() const;
     static S256Point parse(std::array<std::byte, 33>);
+    std::array<std::byte, 21> address(bool testnet = false) const;
     friend std::ostream &operator<<(std::ostream &os, const S256Point &S256)
     {
         if (!S256.x.has_value())
