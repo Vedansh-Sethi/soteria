@@ -1,5 +1,5 @@
 #pragma once
-#include "utils/uint256/uint256.hpp"
+#include "math/uint256.hpp"
 #include <algorithm>
 #include <cctype>
 #include <cstring>

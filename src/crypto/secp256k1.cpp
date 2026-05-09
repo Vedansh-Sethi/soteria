@@ -1,6 +1,6 @@
-#include "ECC/secp256k1/S256Point/S256Point.hpp"
-#include "signing/scalarField/scalarField.hpp"
-#include "utils/crypto/crypto.hpp"
+#include "crypto/secp256k1.hpp"
+#include "crypto/crypto.hpp"
+#include "crypto/signature.hpp"
 #include <stdexcept>
 
 Crypto *instance = Crypto::GetInstance();
@@ -101,4 +101,9 @@ std::array<std::byte, 21> S256Point::address(bool testnet) const
     }
     std::reverse(address.begin(), address.end());
     return address;
+}
+
+S256Field S256Field::sqrt() const
+{
+    return this->pow((prime + 1) / 4);
 }

@@ -1,4 +1,4 @@
-#include "ECC/field_element/field_element.hpp"
+#include "math/field_element.hpp"
 #include <ostream>
 #include <stdexcept>
 #include <sys/types.h>

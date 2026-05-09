@@ -1,5 +1,5 @@
-#include "ECC/ECP/ECP.hpp"
-#include "ECC/field_element/field_element.hpp"
+#include "math/ECP.hpp"
+#include "math/field_element.hpp"
 #include <optional>
 #include <ostream>
 #include <sstream>

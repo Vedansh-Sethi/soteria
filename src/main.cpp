@@ -1,6 +1,7 @@
 
-#include "ECC/secp256k1/S256Point/S256Point.hpp"
-#include "utils/hexer/hexer.hpp"
+#include "crypto/secp256k1.hpp"
+#include "crypto/signature.hpp"
+#include "utils/hexer.hpp"
 
 int main()
 {   

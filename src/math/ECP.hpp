@@ -1,5 +1,5 @@
 #pragma once
-#include "ECC/field_element/field_element.hpp"
+#include "math/field_element.hpp"
 #include <optional>
 #include <stdexcept>
 
