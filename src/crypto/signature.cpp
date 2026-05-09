@@ -1,5 +1,6 @@
 #include "crypto/signature.hpp"
 #include "crypto/secp256k1.hpp"
+#include <algorithm>
 
 std::vector<std::byte> concat(std::vector<std::byte> a,
                               std::vector<std::byte> b)
@@ -66,7 +67,6 @@ std::vector<std::byte> Signature::serialize() const
     return serialized;
 }
 
-
 std::string PrivateKey::RNG256()
 {
     const std::string hexer = "0123456789abcdef";
@@ -89,4 +89,26 @@ std::pair<S256Field, ScalarField> PrivateKey::sign(uint256 z) const
         s.data = N - s.data;
     }
     return std::pair<S256Field, ScalarField>(r, s);
+}
+
+std::array<std::byte, 34> PrivateKey::wif(bool testnet) const
+{
+    std::byte marker;
+    if (testnet)
+        marker = std::byte{0xef};
+    else
+        marker = std::byte{0x80};
+    std::array<std::byte, 34> secretBytes;
+
+    uint256 secretTemp = secret.data;
+    for (int i = 32; i > 0; i--)
+    {
+        secretBytes[i + 1] = std::byte{uint8_t(secretTemp & 0xff)};
+        secretTemp >>= 8;
+    }
+
+    secretBytes[0] = marker;
+    secretBytes[33] = std::byte{0x01};
+
+    return secretBytes;
 }

@@ -29,4 +29,5 @@ class PrivateKey
   public:
     static std::string RNG256();
     std::pair<S256Field, ScalarField> sign(uint256 z) const;
+    std::array<std::byte, 34> wif(bool testnet = false) const;
 };
