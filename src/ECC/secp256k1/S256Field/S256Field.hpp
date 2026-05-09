@@ -22,4 +22,6 @@ class S256Field : public FieldElement
         os << "secp256k1(" << hexify(S256.data) << ")";
         return os;
     }
+
+    S256Field sqrt() const;
 };
