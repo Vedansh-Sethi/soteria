@@ -2,6 +2,7 @@
 #include "utils/uint256/uint256.hpp"
 #include <algorithm>
 #include <cctype>
+#include <cstring>
 #include <string>
 
 inline std::string hexify(uint256 num)
@@ -34,4 +35,21 @@ inline uint256 dehexify(std::string hex)
         }
     }
     return dehexed;
+}
+
+template<typename ByteContainers>
+inline std::string hexifyBytes(const ByteContainers& bytes)
+{
+    std::string hexer = "0123456789abcdef";
+    std::string result;
+
+    for(std::byte byte : bytes)
+    {
+        uint8_t val = std::to_integer<uint8_t>(byte);
+
+        result += hexer[val >> 4];
+        result += hexer[val & 0xf];
+    }
+
+    return result;
 }
