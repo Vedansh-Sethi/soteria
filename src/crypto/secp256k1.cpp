@@ -88,18 +88,10 @@ std::array<std::byte, 21> S256Point::address(bool testnet) const
 {
     std::array<std::byte, 33> serial = this->serialize();
     std::array<std::byte, 20> h160 = instance->hash160(serial);
-    std::reverse(h160.begin(), h160.end());
+    
     std::array<std::byte, 21> address;
-    std::copy(h160.begin(), h160.end(), address.begin());
-    if (testnet)
-    {
-        address[20] = std::byte{0x6f};
-    }
-    else
-    {
-        address[20] = std::byte{0x00};
-    }
-    std::reverse(address.begin(), address.end());
+    std::copy(h160.begin(), h160.end(), address.begin() + 1);
+    address[0] = testnet ? std::byte{0x6f} : std::byte{0x00};
     return address;
 }
 
