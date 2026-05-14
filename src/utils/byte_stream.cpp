@@ -1,6 +1,4 @@
 #include "utils/byte_stream.hpp"
-#include "utils/byte_to_int.hpp"
-#include "utils/hexer.hpp"
 #include <stdexcept>
 
 std::vector<uint8_t> ByteStream::read(size_t numBytes)
