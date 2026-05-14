@@ -20,11 +20,11 @@ class Crypto
     std::array<std::byte, 32> hash256(const ByteContainer &input) const
     {
         std::array<std::byte, 32> hash1;
-        InnerSha256(reinterpret_cast<const uint8_t *>(input.begin()),
-                    input.size(), reinterpret_cast<uint8_t *>(hash1.begin()));
+        InnerSha256(reinterpret_cast<const uint8_t *>(input.data()),
+                    input.size(), reinterpret_cast<uint8_t *>(hash1.data()));
         std::array<std::byte, 32> hash2;
-        InnerSha256(reinterpret_cast<const uint8_t *>(hash1.begin()), 32,
-                    reinterpret_cast<uint8_t *>(hash2.begin()));
+        InnerSha256(reinterpret_cast<const uint8_t *>(hash1.data()), 32,
+                    reinterpret_cast<uint8_t *>(hash2.data()));
 
         return hash2;
     }
@@ -33,8 +33,8 @@ class Crypto
     std::array<std::byte, 20> hash160(const ByteContainer &input) const
     {
         std::array<std::byte, 20> hash;
-        InnerHash160(reinterpret_cast<const uint8_t *>(input.begin()),
-                     input.size(), reinterpret_cast<uint8_t *>(hash.begin()));
+        InnerHash160(reinterpret_cast<const uint8_t *>(input.data()),
+                     input.size(), reinterpret_cast<uint8_t *>(hash.data()));
         return hash;
     }
 };
