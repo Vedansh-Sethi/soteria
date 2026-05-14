@@ -33,6 +33,8 @@ class TxIn
 
     static TxIn parse(ByteStream &);
     std::vector<uint8_t> serialize() const;
+    uint64_t value() const;
+    std::vector<uint8_t> scriptPubKey() const;
 };
 
 class TxOut
@@ -55,6 +57,9 @@ class TxOut
 
     static TxOut parse(ByteStream &);
     std::vector<uint8_t> serialize() const;
+
+    friend class TxIn;
+    friend class Tx;
 };
 
 class Tx
@@ -89,4 +94,5 @@ class Tx
     bool isTimeBased() const;
     bool isBlockBased() const;
     std::vector<uint8_t> serialize() const;
+    uint64_t fee() const;
 };

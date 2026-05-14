@@ -6,7 +6,7 @@
 #include "utils/varint.hpp"
 #include <array>
 #include <cpr/cpr.h>
-#include <stdexcept>
+#include "utils/fetcher.hpp"
 #include <string>
 
 Crypto *transactionInstance = Crypto::GetInstance();
@@ -127,3 +127,33 @@ Tx Tx::parse(ByteStream &stream)
 bool Tx::isTimeBased() const { return locktime >= 500000000; }
 
 bool Tx::isBlockBased() const { return !isTimeBased(); }
+
+uint64_t TxIn::value() const
+{
+    Tx tx = TxFetcher::fetch(hexify((prevHash)));
+    return tx.txOuts[prevIdx].amount;
+}
+
+std::vector<uint8_t> TxIn::scriptPubKey() const
+{
+    Tx tx = TxFetcher::fetch(hexify(prevHash));
+    return tx.txOuts[prevIdx].scriptPubKey;
+}
+
+uint64_t Tx::fee() const
+{
+    uint64_t outputSum = 0;
+    uint64_t inputSum = 0;
+
+    for (const TxIn &input : txIns)
+    {
+        inputSum += input.value();
+    }
+
+    for (const TxOut &output : txOuts)
+    {
+        outputSum += output.amount;
+    }
+
+    return inputSum - outputSum;
+}
