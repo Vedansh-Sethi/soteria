@@ -4,12 +4,14 @@ project(soteria CXX)
 file(GLOB MATH_SOURCES CONFIGURE_DEPENDS "math/*.cpp")
 file(GLOB CRYPTO_SOURCES CONFIGURE_DEPENDS "crypto/*.cpp")
 file(GLOB UTILS_SOURCES CONFIGURE_DEPENDS "utils/*.cpp")
+file(GLOB CORE_SOURCES CONFIGURE_DEPENDS "core/*.cpp")
 
 set(SOURCES
     main.cpp
     ${MATH_SOURCES}
     ${CRYPTO_SOURCES}
     ${UTILS_SOURCES}
+    ${CORE_SOURCES}
 )
 
 find_package(Boost REQUIRED)
