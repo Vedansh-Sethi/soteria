@@ -9,41 +9,41 @@ inline std::string hexify(uint256 num)
 {
     std::string hexer = "0123456789abcdef";
     std::string hexed;
-    for(int i = 0;i < 64; i++)
+    for (int i = 0; i < 64; i++)
     {
-        hexed += hexer[int(num & 0xf)];
+        hexed += hexer[uint(num & 0xf)];
         num >>= 4;
     }
-    std::reverse(hexed.begin(),  hexed.end());
+    std::reverse(hexed.begin(), hexed.end());
     return hexed;
 }
 
 inline uint256 dehexify(std::string hex)
 {
     uint256 dehexed = 0;
-    for(size_t i = 0; i < hex.size(); i++)
+    for (size_t i = 0; i < hex.size(); i++)
     {
-        if(std::isdigit(hex[i]))
+        if (std::isdigit(hex[i]))
         {
-            uint256 bitShift = uint256(1)<<((hex.size() - i - 1)*4);
-            dehexed += (hex[i] - '0')*bitShift;
+            uint256 bitShift = uint256(1) << ((hex.size() - i - 1) * 4);
+            dehexed += (hex[i] - '0') * bitShift;
         }
-        if('a' <= hex[i] && hex[i] <= 'f')
+        if ('a' <= hex[i] && hex[i] <= 'f')
         {
-            uint256 bitShift = uint256(1)<<((hex.size() - i - 1)*4);
-            dehexed += (hex[i] - 'a' + 10)*bitShift;
+            uint256 bitShift = uint256(1) << ((hex.size() - i - 1) * 4);
+            dehexed += (hex[i] - 'a' + 10) * bitShift;
         }
     }
     return dehexed;
 }
 
-template<typename ByteContainers>
-inline std::string hexifyBytes(const ByteContainers& bytes)
+template <typename ByteContainers>
+inline std::string hexifyBytes(const ByteContainers &bytes)
 {
     std::string hexer = "0123456789abcdef";
     std::string result;
 
-    for(std::byte byte : bytes)
+    for (std::byte byte : bytes)
     {
         uint8_t val = std::to_integer<uint8_t>(byte);
 
@@ -52,4 +52,30 @@ inline std::string hexifyBytes(const ByteContainers& bytes)
     }
 
     return result;
+}
+
+inline std::string hexifyBytes(const std::vector<uint8_t> &bytes)
+{
+    std::string hexer = "0123456789abcdef";
+    std::string result;
+
+    for (uint8_t byte : bytes)
+    {
+        result += hexer[byte >> 4];
+        result += hexer[byte & 0xf];
+    }
+
+    return result;
+}
+
+inline std::vector<uint8_t> dehexifyString(const std::string &hex)
+{
+    std::vector<uint8_t> bytes;
+    for (size_t pointer = 0; pointer < hex.length(); pointer += 2)
+    {
+        std::string byteString = hex.substr(pointer, 2);
+        uint8_t byte = static_cast<uint8_t>(std::stoi(byteString, nullptr, 16));
+        bytes.push_back(byte);
+    }
+    return bytes;
 }
