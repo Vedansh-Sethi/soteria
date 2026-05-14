@@ -18,8 +18,8 @@ class TxIn
     uint32_t sequence;
 
   public:
-    TxIn(uint256 prevHash, uint32_t prevIdx, std::vector<uint8_t> scriptSigInput,
-         uint32_t sequence = 0xffffffff)
+    TxIn(uint256 prevHash, uint32_t prevIdx,
+         std::vector<uint8_t> scriptSigInput, uint32_t sequence = 0xffffffff)
         : prevHash(prevHash), prevIdx(prevIdx), scriptSig(scriptSigInput),
           sequence(sequence)
     {

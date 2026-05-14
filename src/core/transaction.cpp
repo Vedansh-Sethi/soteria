@@ -5,8 +5,11 @@
 #include "utils/hexer.hpp"
 #include "utils/varint.hpp"
 #include <array>
+#include <cpr/cpr.h>
+#include <stdexcept>
+#include <string>
 
-Crypto* transactionInstance = Crypto::GetInstance();
+Crypto *transactionInstance = Crypto::GetInstance();
 
 std::array<std::byte, 32> Tx::hash() const
 {
@@ -67,7 +70,12 @@ std::vector<uint8_t> Tx::serialize() const
     return serial;
 }
 
-std::string Tx::id() const { return hexifyBytes(this->hash()); }
+std::string Tx::id() const 
+{
+    std::array<std::byte, 32> hash = this->hash();
+    std::reverse(hash.begin(), hash.end());
+    return hexifyBytes(hash);
+}
 
 TxIn TxIn::parse(ByteStream &stream)
 {
