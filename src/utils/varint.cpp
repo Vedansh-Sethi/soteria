@@ -1,7 +1,6 @@
 #include "utils/varint.hpp"
 #include "utils/byte_to_int.hpp"
 #include <algorithm>
-#include <bit>
 #include <stdexcept>
 
 uint64_t readVarint(ByteStream &stream)

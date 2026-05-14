@@ -3,7 +3,7 @@
 #include "crypto/signature.hpp"
 #include <stdexcept>
 
-Crypto *instance = Crypto::GetInstance();
+Crypto* secp256k1Instance = Crypto::GetInstance();
 
 S256Point S256Point::operator*(const uint256 coeff) const
 {
@@ -87,7 +87,7 @@ S256Point S256Point::parse(std::array<std::byte, 33> secBytes)
 std::array<std::byte, 21> S256Point::address(bool testnet) const
 {
     std::array<std::byte, 33> serial = this->serialize();
-    std::array<std::byte, 20> h160 = instance->hash160(serial);
+    std::array<std::byte, 20> h160 = secp256k1Instance->hash160(serial);
     
     std::array<std::byte, 21> address;
     std::copy(h160.begin(), h160.end(), address.begin() + 1);
