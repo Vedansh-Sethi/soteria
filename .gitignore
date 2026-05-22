@@ -13,6 +13,7 @@ bin/
 
 # OS generated files
 .DS_Store
+.vscode
 
 # configuration files
 .clang-format
