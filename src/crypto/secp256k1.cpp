@@ -1,9 +1,10 @@
 #include "crypto/secp256k1.hpp"
 #include "crypto/crypto.hpp"
 #include "crypto/signature.hpp"
+#include <format>
 #include <stdexcept>
 
-Crypto* secp256k1Instance = Crypto::GetInstance();
+Crypto *secp256k1Instance = Crypto::GetInstance();
 
 S256Point S256Point::operator*(const uint256 coeff) const
 {
@@ -37,33 +38,32 @@ bool S256Point::verify(uint256 z, Signature sign) const
     return target.x.value() == r;
 }
 
-std::array<std::byte, 33> S256Point::serialize() const
+std::vector<uint8_t> S256Point::serialize() const
 {
-    std::byte marker = (y.value().data % 2) ? std::byte{0x3} : std::byte{0x2};
+    uint8_t marker = (y.value().data % 2) ? 0x3 : 0x2;
 
-    std::array<std::byte, 32> xBytes;
+    std::vector<uint8_t> xBytes;
     if (!x.has_value())
         throw std::invalid_argument("Cannot serialize points at infinity");
     uint256 xTemp = x.value().data;
     for (int i = 0; i < 32; i++)
     {
-        xBytes[i] = std::byte{uint8_t(xTemp & 0xff)};
+        xBytes.push_back(uint8_t(xTemp & 0xff));
         xTemp >>= 8;
     }
     reverse(xBytes.begin(), xBytes.end());
 
-    std::array<std::byte, 33> result;
+    std::vector<uint8_t> result;
 
-    result[0] = marker;
-    std::copy(xBytes.begin(), xBytes.end(), result.begin() + 1);
+    result.push_back(marker);
+    result.insert(result.end(), xBytes.begin(), xBytes.end());
 
     return result;
 }
 
-S256Point S256Point::parse(std::array<std::byte, 33> secBytes)
+S256Point S256Point::parse(std::vector<uint8_t> secBytes)
 {
-    std::array<std::byte, 32> xBytes;
-    std::copy(secBytes.begin() + 1, secBytes.end(), xBytes.begin());
+    std::vector<uint8_t> xBytes(secBytes.begin() + 1, secBytes.end());
     S256Field xNum = hexifyBytes(xBytes);
     S256Field alpha = xNum.pow(3) + B;
     S256Field beta = alpha.sqrt();
@@ -78,24 +78,23 @@ S256Point S256Point::parse(std::array<std::byte, 33> secBytes)
         evenBeta = S256Field(0) - beta;
         oddBeta = beta;
     }
-    if (secBytes[0] == std::byte{0x2})
+    if (secBytes[0] == 0x2)
         return S256Point(xNum, evenBeta);
-    else
+    else if (secBytes[0] == 0x3)
         return S256Point(xNum, oddBeta);
+    else
+        throw std::format_error("Wrong SEC Format");
 }
 
-std::array<std::byte, 21> S256Point::address(bool testnet) const
+std::vector<uint8_t> S256Point::address(bool testnet) const
 {
-    std::array<std::byte, 33> serial = this->serialize();
-    std::array<std::byte, 20> h160 = secp256k1Instance->hash160(serial);
-    
-    std::array<std::byte, 21> address;
+    std::vector<uint8_t> serial = this->serialize();
+    std::vector<uint8_t> h160 = secp256k1Instance->hash160(serial);
+
+    std::vector<uint8_t> address;
+    address.push_back(testnet ? 0x6f : 0x00);
     std::copy(h160.begin(), h160.end(), address.begin() + 1);
-    address[0] = testnet ? std::byte{0x6f} : std::byte{0x00};
     return address;
 }
 
-S256Field S256Field::sqrt() const
-{
-    return this->pow((prime + 1) / 4);
-}
+S256Field S256Field::sqrt() const { return this->pow((prime + 1) / 4); }

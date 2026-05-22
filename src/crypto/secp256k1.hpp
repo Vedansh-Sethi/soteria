@@ -91,9 +91,9 @@ class S256Point : public FFECP
     S256Point operator*(const uint256) const;
     S256Point operator*(const ScalarField &) const;
     bool verify(uint256, Signature) const;
-    std::array<std::byte, 33> serialize() const;
-    static S256Point parse(std::array<std::byte, 33>);
-    std::array<std::byte, 21> address(bool testnet = false) const;
+    std::vector<uint8_t> serialize() const;
+    static S256Point parse(std::vector<uint8_t>);
+    std::vector<uint8_t> address(bool testnet = false) const;
     friend std::ostream &operator<<(std::ostream &os, const S256Point &S256)
     {
         if (!S256.x.has_value())

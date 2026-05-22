@@ -1,7 +1,8 @@
 #pragma once
-#include <array>
 #include <cstdint>
 #include <cstring>
+#include <string>
+#include <vector>
 
 class Crypto
 {
@@ -17,22 +18,24 @@ class Crypto
     static Crypto *GetInstance();
 
     template <typename ByteContainer>
-    std::array<std::byte, 32> hash256(const ByteContainer &input) const
+    std::vector<uint8_t> hash256(const ByteContainer &input) const
     {
-        std::array<std::byte, 32> hash1;
+        std::vector<uint8_t> hash1;
         InnerSha256(reinterpret_cast<const uint8_t *>(input.data()),
                     input.size(), reinterpret_cast<uint8_t *>(hash1.data()));
-        std::array<std::byte, 32> hash2;
+        std::vector<uint8_t> hash2;
         InnerSha256(reinterpret_cast<const uint8_t *>(hash1.data()), 32,
                     reinterpret_cast<uint8_t *>(hash2.data()));
 
         return hash2;
     }
 
+    std::vector<uint8_t> hash256(const std::string &input) const;
+
     template <typename ByteContainer>
-    std::array<std::byte, 20> hash160(const ByteContainer &input) const
+    std::vector<uint8_t> hash160(const ByteContainer &input) const
     {
-        std::array<std::byte, 20> hash;
+        std::vector<uint8_t> hash;
         InnerHash160(reinterpret_cast<const uint8_t *>(input.data()),
                      input.size(), reinterpret_cast<uint8_t *>(hash.data()));
         return hash;

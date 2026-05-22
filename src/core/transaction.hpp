@@ -89,7 +89,7 @@ class Tx
     }
 
     std::string id() const;
-    std::array<std::byte, 32> hash() const;
+    std::vector<uint8_t> hash() const;
     static Tx parse(ByteStream &);
     bool isTimeBased() const;
     bool isBlockBased() const;

@@ -11,7 +11,7 @@
 
 Crypto *transactionInstance = Crypto::GetInstance();
 
-std::array<std::byte, 32> Tx::hash() const
+std::vector<uint8_t> Tx::hash() const
 {
     return transactionInstance->hash256(this->serialize());
 }
@@ -72,7 +72,7 @@ std::vector<uint8_t> Tx::serialize() const
 
 std::string Tx::id() const 
 {
-    std::array<std::byte, 32> hash = this->hash();
+    std::vector<uint8_t> hash = this->hash();
     std::reverse(hash.begin(), hash.end());
     return hexifyBytes(hash);
 }

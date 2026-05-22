@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <memory>
 #include <openssl/evp.h>
+#include <vector>
 
 Crypto *Crypto::GetInstance()
 {
@@ -52,6 +53,18 @@ void Crypto::InnerHash160(const uint8_t *input, size_t len,
     EVP_DigestInit_ex(ctx.get(), EVP_ripemd160(), nullptr);
     EVP_DigestUpdate(ctx.get(), sha256_hash, sha256_len);
     EVP_DigestFinal_ex(ctx.get(), output, &ripemd_len);
+}
+
+std::vector<uint8_t> Crypto::hash256(const std::string& input) const
+{
+    std::vector<uint8_t> bytes;
+    for(size_t pos = 0; pos < input.length(); pos += 2)
+    {
+        std::string byteString = input.substr(pos, 2);
+        uint8_t byte = static_cast<uint8_t>(std::stoi(byteString, nullptr, 16));
+        bytes.push_back(byte);
+    }
+    return hash256(bytes);
 }
 
 Crypto *Crypto::instance = nullptr;
