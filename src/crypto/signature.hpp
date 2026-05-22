@@ -1,7 +1,7 @@
 #pragma once
+#include "crypto/secp256k1.hpp"
 #include "math/field_element.hpp"
 #include "utils/hexer.hpp"
-#include "crypto/secp256k1.hpp"
 #include <cstddef>
 
 class Signature
@@ -9,16 +9,16 @@ class Signature
   public:
     S256Field r;
     ScalarField s;
-    
-    friend std::ostream& operator<<(std::ostream& os, const Signature& sign)
+
+    friend std::ostream &operator<<(std::ostream &os, const Signature &sign)
     {
         os << "Signature(" << sign.r << "," << sign.s << ")";
         return os;
     }
-    
-    std::vector<std::byte> serialize() const;
-};
 
+    std::vector<uint8_t> serialize() const;
+    static Signature parse(const std::vector<uint8_t> &);
+};
 
 class PrivateKey
 {
