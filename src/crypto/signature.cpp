@@ -97,7 +97,7 @@ std::string PrivateKey::RNG256()
     return hexedRandom;
 }
 
-std::pair<S256Field, ScalarField> PrivateKey::sign(uint256 z) const
+Signature PrivateKey::sign(uint256 z) const
 {
     ScalarField zField = ScalarField(z);
     ScalarField k = dehexify(RNG256());
@@ -107,7 +107,7 @@ std::pair<S256Field, ScalarField> PrivateKey::sign(uint256 z) const
     {
         s.data = N - s.data;
     }
-    return std::pair<S256Field, ScalarField>(r, s);
+    return Signature(r, s);
 }
 
 std::array<std::byte, 34> PrivateKey::wif(bool testnet) const
