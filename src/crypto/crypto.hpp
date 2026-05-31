@@ -20,10 +20,10 @@ class Crypto
     template <typename ByteContainer>
     std::vector<uint8_t> hash256(const ByteContainer &input) const
     {
-        std::vector<uint8_t> hash1;
+        std::vector<uint8_t> hash1(32);
         InnerSha256(reinterpret_cast<const uint8_t *>(input.data()),
                     input.size(), reinterpret_cast<uint8_t *>(hash1.data()));
-        std::vector<uint8_t> hash2;
+        std::vector<uint8_t> hash2(32);
         InnerSha256(reinterpret_cast<const uint8_t *>(hash1.data()), 32,
                     reinterpret_cast<uint8_t *>(hash2.data()));
 
@@ -35,7 +35,7 @@ class Crypto
     template <typename ByteContainer>
     std::vector<uint8_t> hash160(const ByteContainer &input) const
     {
-        std::vector<uint8_t> hash;
+        std::vector<uint8_t> hash(20);
         InnerHash160(reinterpret_cast<const uint8_t *>(input.data()),
                      input.size(), reinterpret_cast<uint8_t *>(hash.data()));
         return hash;
