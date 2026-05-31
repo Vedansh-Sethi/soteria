@@ -1,23 +1,23 @@
 #pragma once
 
+#include "core/utxo.hpp"
 #include "math/uint256.hpp"
 #include "utils/byte_stream.hpp"
 #include "utils/hexer.hpp"
 #include <cstdint>
 #include <ctime>
+#include <functional>
 #include <ostream>
 #include <sstream>
 #include <vector>
 
 class TxIn
 {
-  private:
+  public:
     uint256 prevHash;
     uint32_t prevIdx;
     std::vector<uint8_t> scriptSig;
     uint32_t sequence;
-
-  public:
     TxIn(uint256 prevHash, uint32_t prevIdx,
          std::vector<uint8_t> scriptSigInput, uint32_t sequence = 0xffffffff)
         : prevHash(prevHash), prevIdx(prevIdx), scriptSig(scriptSigInput),
@@ -35,6 +35,8 @@ class TxIn
     std::vector<uint8_t> serialize() const;
     uint64_t value() const;
     std::vector<uint8_t> scriptPubKey() const;
+
+    friend class Tx;
 };
 
 class TxOut
@@ -94,5 +96,8 @@ class Tx
     bool isTimeBased() const;
     bool isBlockBased() const;
     std::vector<uint8_t> serialize() const;
-    uint64_t fee() const;
+    int fee() const;
+    std::vector<uint8_t> sigHash(uint, const std::vector<uint8_t> &) const;
+    bool verifyInput(uint inputIdx, const UTXOPool &) const;
+    bool verify(const UTXOPool &) const;
 };

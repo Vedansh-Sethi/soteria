@@ -1,15 +1,21 @@
 #include "core/transaction.hpp"
+#include "core/utxo.hpp"
 #include "crypto/crypto.hpp"
+#include "script/script.hpp"
 #include "utils/byte_stream.hpp"
 #include "utils/byte_to_int.hpp"
 #include "utils/hexer.hpp"
 #include "utils/varint.hpp"
-#include <array>
 #include <cpr/cpr.h>
 #include "utils/fetcher.hpp"
 #include <string>
 
 Crypto *transactionInstance = Crypto::GetInstance();
+
+void insert(std::vector<uint8_t> &dest, const std::vector<uint8_t> &from)
+{
+    dest.insert(dest.end(), from.begin(), from.end());
+}
 
 std::vector<uint8_t> Tx::hash() const
 {
@@ -140,7 +146,7 @@ std::vector<uint8_t> TxIn::scriptPubKey() const
     return tx.txOuts[prevIdx].scriptPubKey;
 }
 
-uint64_t Tx::fee() const
+int Tx::fee() const
 {
     uint64_t outputSum = 0;
     uint64_t inputSum = 0;
@@ -156,4 +162,62 @@ uint64_t Tx::fee() const
     }
 
     return inputSum - outputSum;
+}
+
+std::vector<uint8_t> Tx::sigHash(uint inputIdx, const std::vector<uint8_t> &prevScriptPubKey) const
+{
+    std::vector<uint8_t> modifiedTx;
+    auto versionBytes = intToLittleEndian(version, 4);
+    insert(modifiedTx, versionBytes);
+    auto numTxIns = encodeVarint(txIns.size());
+    insert(modifiedTx, numTxIns);
+    {
+        const auto &input = txIns[inputIdx];
+        insert(modifiedTx, intToLittleEndian(input.prevHash, 32));
+        insert(modifiedTx, intToLittleEndian(input.prevIdx, 4));
+        insert(modifiedTx, prevScriptPubKey);
+        insert(modifiedTx, intToLittleEndian(input.sequence, 4));
+    }
+    std::vector<uint8_t> numTxOuts = encodeVarint(txOuts.size());
+    insert(modifiedTx, numTxOuts);
+    for(const auto &output : txOuts)
+    {
+        insert(modifiedTx, output.serialize());
+    }
+    insert(modifiedTx, intToLittleEndian(locktime, 4));
+    insert(modifiedTx, intToLittleEndian(1, 4));
+    return transactionInstance->hash256(modifiedTx);
+}
+
+bool Tx::verifyInput(uint inputIdx, const UTXOPool &pool) const
+{
+    const auto &input = txIns[inputIdx];
+
+    std::string txHexId = hexify(input.prevHash);
+    UTXORecord utxo = pool.getUTXO(txHexId, input.prevIdx);
+
+    std::vector<uint8_t> z = this->sigHash(inputIdx, utxo.scriptPubKey);
+
+    std::vector<uint8_t> scriptSig = input.scriptSig;
+
+    ByteStream pubKeyStream = ByteStream(utxo.scriptPubKey);
+    Script executable = Script::parse(pubKeyStream);
+
+    ByteStream scriptSigStream = ByteStream(scriptSig);
+    Script sigExeceutable = Script::parse(scriptSigStream);
+
+    Script final = sigExeceutable + executable;
+    return final.evaluate(z);
+}
+
+bool Tx::verify(const UTXOPool &pool) const
+{
+    bool output = true;
+    if(fee() < 0) return false;
+    for(uint i = 0; i < txIns.size(); i++)
+    {
+        output = verifyInput(i, pool);
+        if(!output) return false;
+    }
+    return output;
 }
