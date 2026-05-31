@@ -71,11 +71,11 @@ S256Point S256Point::parse(std::vector<uint8_t> secBytes)
     if (beta.data % 2 == 0)
     {
         evenBeta = beta;
-        oddBeta = S256Field(0) - beta;
+        oddBeta = S256Field(P - beta.data);
     }
     else
     {
-        evenBeta = S256Field(0) - beta;
+        evenBeta = S256Field(P - beta.data);
         oddBeta = beta;
     }
     if (secBytes[0] == 0x2)
@@ -93,7 +93,7 @@ std::vector<uint8_t> S256Point::address(bool testnet) const
 
     std::vector<uint8_t> address;
     address.push_back(testnet ? 0x6f : 0x00);
-    std::copy(h160.begin(), h160.end(), address.begin() + 1);
+    address.insert(address.end(), h160.begin(), h160.end());
     return address;
 }
 
