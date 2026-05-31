@@ -79,3 +79,8 @@ inline std::vector<uint8_t> dehexifyString(const std::string &hex)
     }
     return bytes;
 }
+
+inline std::vector<uint8_t> stringToBytes(const std::string &inp)
+{
+    return std::vector<uint8_t>(inp.begin(), inp.end());
+}
