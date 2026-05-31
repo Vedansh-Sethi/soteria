@@ -1,6 +1,7 @@
 #pragma once
 #include "crypto/secp256k1.hpp"
 #include "math/field_element.hpp"
+#include "script/script.hpp"
 #include "utils/hexer.hpp"
 #include <cstddef>
 
@@ -30,5 +31,6 @@ class PrivateKey
     S256Point publicKey = Genesis * secret.data;
     Signature sign(uint256 z) const;
     std::array<std::byte, 34> wif(bool testnet = false) const;
+    Script p2pkhScript() const;
     PrivateKey(ScalarField secret) : secret(secret) {}
 };

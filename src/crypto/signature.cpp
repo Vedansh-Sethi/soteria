@@ -1,8 +1,11 @@
 #include "crypto/signature.hpp"
+#include "crypto/crypto.hpp"
 #include "crypto/secp256k1.hpp"
 #include "utils/byte_to_int.hpp"
 #include <algorithm>
 #include <format>
+
+Crypto* signatureInstance = Crypto::GetInstance();
 
 std::vector<std::byte> concat(std::vector<std::byte> a,
                               std::vector<std::byte> b)
@@ -130,4 +133,16 @@ std::array<std::byte, 34> PrivateKey::wif(bool testnet) const
     secretBytes[33] = std::byte{0x01};
 
     return secretBytes;
+}
+
+Script PrivateKey::p2pkhScript() const
+{
+    auto h160 = signatureInstance->hash160(publicKey.serialize());
+    std::vector<Token> cmds;
+    cmds.push_back({true, {}, 0x76});
+    cmds.push_back({true, {}, 0xa9});
+    cmds.push_back({false, h160, 0x00});
+    cmds.push_back({true, {}, 0x88});
+    cmds.push_back({true, {}, 0xac});
+    return Script(cmds);
 }
