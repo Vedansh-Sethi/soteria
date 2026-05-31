@@ -27,6 +27,9 @@ bool opInvalid(Ctx &);
 bool opCheckSig(Ctx &);
 bool op1(Ctx &);
 bool op0(Ctx &);
+bool opDup(Ctx &);
+bool opHash160(Ctx &);
+bool opEqualVerify(Ctx &);
 
 std::vector<uint8_t> encodeNum(int);
 int decodeNum(std::vector<uint8_t>);
@@ -39,6 +42,9 @@ const std::array<opCodeFunc, 256> opCodeDict = []()
     table[0xac] = opCheckSig;
     table[0x51] = op1;
     table[0x00] = op0;
+    table[0x76] = opDup;
+    table[0xa9] = opHash160;
+    table[0x88] = opEqualVerify;
 
     return table;
 }();
